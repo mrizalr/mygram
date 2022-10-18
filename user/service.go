@@ -10,6 +10,7 @@ import (
 type Service interface {
 	Register(userRegisterRequest UserRegisterRequest) (User, error)
 	Login(userLoginRequest UserLoginRequest) (LoginResponse, error)
+	Update(id int, userUpdateRequest UserUpdateRequest) (User, error)
 }
 
 type service struct {
@@ -56,4 +57,16 @@ func (s *service) Login(userLoginRequest UserLoginRequest) (LoginResponse, error
 
 	loginResponse.Token = tokenString
 	return loginResponse, nil
+}
+
+func (s *service) Update(id int, userUpdateRequest UserUpdateRequest) (User, error) {
+	user, err := s.repository.FindByID(id)
+	if err != nil {
+		return user, err
+	}
+
+	user.Email = userUpdateRequest.Email
+	user.Username = userUpdateRequest.Username
+
+	return s.repository.Save(user)
 }

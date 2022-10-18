@@ -7,6 +7,8 @@ import (
 type Repository interface {
 	Create(user User) (User, error)
 	FindByEmail(email string) (User, error)
+	FindByID(id int) (User, error)
+	Save(user User) (User, error)
 }
 
 type repository struct {
@@ -27,5 +29,16 @@ func (r *repository) Create(user User) (User, error) {
 func (r *repository) FindByEmail(email string) (User, error) {
 	user := User{}
 	err := r.db.Where("email = ?", email).First(&user).Error
+	return user, err
+}
+
+func (r *repository) FindByID(id int) (User, error) {
+	user := User{}
+	err := r.db.Where("id = ?", id).First(&user).Error
+	return user, err
+}
+
+func (r *repository) Save(user User) (User, error) {
+	err := r.db.Save(user).Error
 	return user, err
 }

@@ -3,6 +3,7 @@ package user
 import (
 	"net/http"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -62,5 +63,35 @@ func (h *UserHandler) UserLoginHandler(c *gin.Context) {
 		return
 	}
 
+	c.SetCookie("token", response.Token, 3600, "", "", false, true)
+
 	c.JSON(http.StatusOK, response)
+}
+
+func (h *UserHandler) UserUpdateHandler(c *gin.Context) {
+	user := UserUpdateRequest{}
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": err.Error(),
+		})
+	}
+
+	claims, _ := c.Get("claims")
+	userId := claims.(jwt.MapClaims)["id"].(float64)
+	updatedUser, err := h.service.Update(int(userId), user)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"status":  "error",
+			"message": err.Error(),
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"id":         updatedUser.ID,
+		"email":      updatedUser.Email,
+		"username":   updatedUser.Username,
+		"age":        updatedUser.Age,
+		"updated_at": updatedUser.UpdatedAt,
+	})
 }
