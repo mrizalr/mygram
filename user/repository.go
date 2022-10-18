@@ -1,9 +1,12 @@
 package user
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Repository interface {
 	Create(user User) (User, error)
+	FindByEmail(email string) (User, error)
 }
 
 type repository struct {
@@ -18,5 +21,11 @@ func NewRepository(db *gorm.DB) *repository {
 
 func (r *repository) Create(user User) (User, error) {
 	err := r.db.Create(&user).Error
+	return user, err
+}
+
+func (r *repository) FindByEmail(email string) (User, error) {
+	user := User{}
+	err := r.db.Where("email = ?", email).First(&user).Error
 	return user, err
 }
