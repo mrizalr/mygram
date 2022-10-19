@@ -1,4 +1,4 @@
-package user
+package handlers
 
 import (
 	"net/http"
@@ -6,20 +6,22 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/mrizalr/mygram/models"
+	"github.com/mrizalr/mygram/services"
 )
 
 type UserHandler struct {
-	service Service
+	service services.UserService
 }
 
-func NewHandler(service Service) *UserHandler {
+func NewUserHandler(service services.UserService) *UserHandler {
 	return &UserHandler{
 		service: service,
 	}
 }
 
 func (h *UserHandler) UserRegisterHandler(c *gin.Context) {
-	userRequest := UserRegisterRequest{}
+	userRequest := models.UserRegisterRequest{}
 	if err := c.ShouldBindJSON(&userRequest); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"status":  "error",
@@ -46,7 +48,7 @@ func (h *UserHandler) UserRegisterHandler(c *gin.Context) {
 }
 
 func (h *UserHandler) UserLoginHandler(c *gin.Context) {
-	loginRequest := UserLoginRequest{}
+	loginRequest := models.UserLoginRequest{}
 	if err := c.ShouldBindJSON(&loginRequest); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"status":  "error",
@@ -82,7 +84,7 @@ func (h *UserHandler) UserLoginHandler(c *gin.Context) {
 }
 
 func (h *UserHandler) UserUpdateHandler(c *gin.Context) {
-	user := UserUpdateRequest{}
+	user := models.UserUpdateRequest{}
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"status":  "error",
@@ -122,6 +124,8 @@ func (h *UserHandler) DeleteUserHandler(c *gin.Context) {
 		})
 		return
 	}
+
+	c.SetCookie("token", "", 0, "", "", false, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Your account has been successfully deleted",

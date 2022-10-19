@@ -1,4 +1,4 @@
-package user
+package models
 
 type UserRegisterRequest struct {
 	Age      uint   `json:"age" binding:"required,number,min=8"`

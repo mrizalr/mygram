@@ -4,10 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/mrizalr/mygram/comment"
-	"github.com/mrizalr/mygram/photo"
-	socialmedia "github.com/mrizalr/mygram/socialMedia"
-	"github.com/mrizalr/mygram/user"
+	"github.com/mrizalr/mygram/entities"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -28,7 +25,7 @@ func Connect() {
 		log.Fatal("Error connecting database")
 	}
 
-	db.AutoMigrate(&user.User{}, &photo.Photo{}, &comment.Comment{}, &socialmedia.SocialMedia{})
+	db.AutoMigrate(&entities.User{}, &entities.Photo{}, &entities.Comment{}, &entities.SocialMedia{})
 	log.Printf("Success connecting to database")
 }
 

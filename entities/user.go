@@ -1,11 +1,7 @@
-package user
+package entities
 
 import (
 	"time"
-
-	"github.com/mrizalr/mygram/comment"
-	"github.com/mrizalr/mygram/photo"
-	socialmedia "github.com/mrizalr/mygram/socialMedia"
 )
 
 type User struct {
@@ -16,7 +12,7 @@ type User struct {
 	Age         uint      `json:"age" gorm:"type:integer;not null"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
-	Photos      []photo.Photo
-	Comments    []comment.Comment
-	SocialMedia []socialmedia.SocialMedia
+	Photos      []Photo
+	Comments    []Comment
+	SocialMedia []SocialMedia
 }

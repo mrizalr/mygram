@@ -1,9 +1,7 @@
-package photo
+package entities
 
 import (
 	"time"
-
-	"github.com/mrizalr/mygram/comment"
 )
 
 type Photo struct {
@@ -14,5 +12,5 @@ type Photo struct {
 	UserID    uint      `json:"user_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
-	Comments  []comment.Comment
+	Comments  []Comment
 }

@@ -1,4 +1,4 @@
-package socialmedia
+package entities
 
 import "time"
 
