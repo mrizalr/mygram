@@ -1,15 +1,12 @@
 package user
 
 import (
-	"os"
-
-	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Service interface {
 	Register(userRegisterRequest UserRegisterRequest) (User, error)
-	Login(userLoginRequest UserLoginRequest) (LoginResponse, error)
+	Login(userLoginRequest UserLoginRequest) (User, error)
 	Update(id int, userUpdateRequest UserUpdateRequest) (User, error)
 }
 
@@ -37,26 +34,18 @@ func (s *service) Register(userRegisterRequest UserRegisterRequest) (User, error
 	return s.repository.Create(newUser)
 }
 
-func (s *service) Login(userLoginRequest UserLoginRequest) (LoginResponse, error) {
-	loginResponse := LoginResponse{}
+func (s *service) Login(userLoginRequest UserLoginRequest) (User, error) {
 	userFound, err := s.repository.FindByEmail(userLoginRequest.Email)
 	if err != nil {
-		return loginResponse, err
+		return userFound, err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(userFound.Password), []byte(userLoginRequest.Password))
 	if err != nil {
-		return loginResponse, err
+		return userFound, err
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"id": userFound.ID})
-	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
-	if err != nil {
-		return loginResponse, err
-	}
-
-	loginResponse.Token = tokenString
-	return loginResponse, nil
+	return userFound, nil
 }
 
 func (s *service) Update(id int, userUpdateRequest UserUpdateRequest) (User, error) {

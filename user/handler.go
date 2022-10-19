@@ -2,6 +2,7 @@ package user
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -54,7 +55,7 @@ func (h *UserHandler) UserLoginHandler(c *gin.Context) {
 		return
 	}
 
-	response, err := h.service.Login(loginRequest)
+	user, err := h.service.Login(loginRequest)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"status":  "error",
@@ -63,9 +64,21 @@ func (h *UserHandler) UserLoginHandler(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("token", response.Token, 3600, "", "", false, true)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"user_id": user.ID})
+	signedToken, err := token.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"status":  "error",
+			"message": err.Error(),
+		})
+		return
+	}
 
-	c.JSON(http.StatusOK, response)
+	c.SetCookie("token", signedToken, 3600, "", "", false, true)
+
+	c.JSON(http.StatusOK, gin.H{
+		"token": signedToken,
+	})
 }
 
 func (h *UserHandler) UserUpdateHandler(c *gin.Context) {
@@ -78,7 +91,7 @@ func (h *UserHandler) UserUpdateHandler(c *gin.Context) {
 	}
 
 	claims, _ := c.Get("claims")
-	userId := claims.(jwt.MapClaims)["id"].(float64)
+	userId := claims.(jwt.MapClaims)["user_id"].(float64)
 	updatedUser, err := h.service.Update(int(userId), user)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
