@@ -8,7 +8,7 @@ import (
 	"github.com/mrizalr/mygram/handlers"
 	_ "github.com/mrizalr/mygram/initializers"
 	"github.com/mrizalr/mygram/repositories"
-	"github.com/mrizalr/mygram/router"
+	"github.com/mrizalr/mygram/routers"
 	"github.com/mrizalr/mygram/services"
 )
 
@@ -22,7 +22,12 @@ func main() {
 	userRepository := repositories.NewUserRepository(database.GetDB())
 	userService := services.NewUserService(userRepository)
 	userHandler := handlers.NewUserHandler(userService)
-	router.InitUserRoutes(Routes, userHandler)
+	routers.InitUserRoutes(Routes, userHandler)
+
+	photoRepository := repositories.NewPhotoRepository(database.GetDB())
+	photoService := services.NewPhotoService(photoRepository, userRepository)
+	photoHandler := handlers.NewPhotoHandlers(photoService)
+	routers.InitPhotoRoutes(Routes, photoHandler)
 
 	Routes.Run(os.Getenv("SERVER_PORT"))
 }

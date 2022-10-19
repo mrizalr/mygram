@@ -1,4 +1,4 @@
-package router
+package routers
 
 import (
 	"github.com/gin-gonic/gin"
@@ -6,12 +6,12 @@ import (
 	"github.com/mrizalr/mygram/middlewares"
 )
 
-func InitUserRoutes(Routes *gin.Engine, userHandler *handlers.UserHandler) {
+func InitUserRoutes(Routes *gin.Engine, handler *handlers.UserHandler) {
 	userGroup := Routes.Group("/users")
 	{
-		userGroup.POST("/register", userHandler.UserRegisterHandler)
-		userGroup.POST("/login", userHandler.UserLoginHandler)
-		userGroup.PUT("/", middlewares.Auth, userHandler.UserUpdateHandler)
-		userGroup.DELETE("/", middlewares.Auth, userHandler.DeleteUserHandler)
+		userGroup.POST("/register", handler.UserRegisterHandler)
+		userGroup.POST("/login", handler.UserLoginHandler)
+		userGroup.PUT("/", middlewares.Auth, handler.UserUpdateHandler)
+		userGroup.DELETE("/", middlewares.Auth, handler.DeleteUserHandler)
 	}
 }

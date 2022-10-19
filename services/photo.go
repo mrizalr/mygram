@@ -7,13 +7,32 @@ import (
 )
 
 type PhotoService interface {
-	Create(user entities.User, createRequest models.CreateRequest) (entities.Photo, error)
+	Create(userID int, createRequest models.CreatePhotoRequest) (entities.Photo, error)
 }
 
 type photoService struct {
-	repository *repositories.PhotoRepository
+	photoRepository repositories.PhotoRepository
+	userRepository  repositories.UserRepository
 }
 
-// func (s *service) Create(user entities.User, createRequest models.CreateRequest) (entities.Photo, error) {
+func NewPhotoService(photoRepository repositories.PhotoRepository, userRepository repositories.UserRepository) *photoService {
+	return &photoService{
+		photoRepository: photoRepository,
+		userRepository:  userRepository,
+	}
+}
 
-// }
+func (s *photoService) Create(userID int, createRequest models.CreatePhotoRequest) (entities.Photo, error) {
+	newPhoto := entities.Photo{
+		Title:    createRequest.Title,
+		Caption:  createRequest.Caption,
+		PhotoURL: createRequest.PhotoURL,
+	}
+
+	user, err := s.userRepository.FindByID(userID)
+	if err != nil {
+		return newPhoto, err
+	}
+
+	return s.photoRepository.Create(user, newPhoto)
+}
