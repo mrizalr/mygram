@@ -12,5 +12,6 @@ func InitUserRoutes(Routes *gin.Engine, userHandler *user.UserHandler) {
 		userGroup.POST("/register", userHandler.UserRegisterHandler)
 		userGroup.POST("/login", userHandler.UserLoginHandler)
 		userGroup.PUT("/", middlewares.Auth, userHandler.UserUpdateHandler)
+		userGroup.DELETE("/", middlewares.Auth, userHandler.DeleteUserHandler)
 	}
 }

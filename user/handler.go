@@ -88,6 +88,7 @@ func (h *UserHandler) UserUpdateHandler(c *gin.Context) {
 			"status":  "error",
 			"message": err.Error(),
 		})
+		return
 	}
 
 	claims, _ := c.Get("claims")
@@ -98,6 +99,7 @@ func (h *UserHandler) UserUpdateHandler(c *gin.Context) {
 			"status":  "error",
 			"message": err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -106,5 +108,22 @@ func (h *UserHandler) UserUpdateHandler(c *gin.Context) {
 		"username":   updatedUser.Username,
 		"age":        updatedUser.Age,
 		"updated_at": updatedUser.UpdatedAt,
+	})
+}
+
+func (h *UserHandler) DeleteUserHandler(c *gin.Context) {
+	claims, _ := c.Get("claims")
+	userId := claims.(jwt.MapClaims)["user_id"].(float64)
+	_, err := h.service.Delete(int(userId))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"status":  "error",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Your account has been successfully deleted",
 	})
 }

@@ -8,6 +8,7 @@ type Service interface {
 	Register(userRegisterRequest UserRegisterRequest) (User, error)
 	Login(userLoginRequest UserLoginRequest) (User, error)
 	Update(id int, userUpdateRequest UserUpdateRequest) (User, error)
+	Delete(id int) (User, error)
 }
 
 type service struct {
@@ -58,4 +59,13 @@ func (s *service) Update(id int, userUpdateRequest UserUpdateRequest) (User, err
 	user.Username = userUpdateRequest.Username
 
 	return s.repository.Save(user)
+}
+
+func (s *service) Delete(id int) (User, error) {
+	user, err := s.repository.FindByID(id)
+	if err != nil {
+		return user, err
+	}
+
+	return s.repository.Delete(user)
 }
