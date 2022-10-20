@@ -43,3 +43,21 @@ func (h *PhotoHandlers) UploadPhoto(c *gin.Context) {
 
 	c.JSON(http.StatusOK, photo)
 }
+
+func (h *PhotoHandlers) GetAllPhotos(c *gin.Context) {
+	photos, err := h.photoService.GetAll()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	photosResponse := []models.GetPhotoResponse{}
+	for _, photo := range photos {
+		photosResponse = append(photosResponse, models.ParseToGetPhotoResponse(photo, photo.User))
+	}
+
+	c.JSON(http.StatusOK, photosResponse)
+}

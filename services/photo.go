@@ -8,6 +8,7 @@ import (
 
 type PhotoService interface {
 	Create(userID int, createRequest models.CreatePhotoRequest) (entities.Photo, error)
+	GetAll() ([]entities.Photo, error)
 }
 
 type photoService struct {
@@ -35,4 +36,8 @@ func (s *photoService) Create(userID int, createRequest models.CreatePhotoReques
 	}
 
 	return s.photoRepository.Create(user, newPhoto)
+}
+
+func (s *photoService) GetAll() ([]entities.Photo, error) {
+	return s.photoRepository.Find()
 }
