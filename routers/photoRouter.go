@@ -12,5 +12,6 @@ func InitPhotoRoutes(Routes *gin.Engine, handler *handlers.PhotoHandlers) {
 		photoGroup.POST("/", middlewares.Auth, handler.UploadPhoto)
 		photoGroup.GET("/", middlewares.Auth, handler.GetAllPhotos)
 		photoGroup.PUT("/:photoId", middlewares.Auth, handler.UpdatePhoto)
+		photoGroup.DELETE("/:photoId", middlewares.Auth, handler.DeletePhoto)
 	}
 }

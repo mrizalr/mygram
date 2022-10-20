@@ -13,6 +13,7 @@ type PhotoService interface {
 	Create(userID int, createRequest models.CreatePhotoRequest) (entities.Photo, error)
 	GetAll() ([]entities.Photo, error)
 	Update(paramID string, userID int, updateRequest models.CreatePhotoRequest) (entities.Photo, error)
+	Delete(paramID string, userID int) (entities.Photo, error)
 }
 
 type photoService struct {
@@ -66,4 +67,22 @@ func (s *photoService) Update(paramID string, userID int, updateRequest models.C
 	photo.PhotoURL = updateRequest.PhotoURL
 
 	return s.photoRepository.Save(photo)
+}
+
+func (s *photoService) Delete(paramID string, userID int) (entities.Photo, error) {
+	ID, err := strconv.Atoi(paramID)
+	if err != nil {
+		return entities.Photo{}, err
+	}
+
+	photo, err := s.photoRepository.FindByID(ID)
+	if err != nil {
+		return entities.Photo{}, err
+	}
+
+	if photo.UserID != uint(userID) {
+		return entities.Photo{}, errors.New("Not authorized")
+	}
+
+	return s.photoRepository.Delete(photo)
 }

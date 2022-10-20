@@ -93,3 +93,22 @@ func (h *PhotoHandlers) UpdatePhoto(c *gin.Context) {
 		"updated_at": result.UpdatedAt,
 	})
 }
+
+func (h *PhotoHandlers) DeletePhoto(c *gin.Context) {
+	photoID := c.Param("photoId")
+
+	claims, _ := c.Get("claims")
+	userID := claims.(jwt.MapClaims)["user_id"].(float64)
+	_, err := h.photoService.Delete(photoID, int(userID))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Your photo has been successfully deleted",
+	})
+}

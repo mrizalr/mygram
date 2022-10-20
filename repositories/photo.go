@@ -11,6 +11,7 @@ type PhotoRepository interface {
 	Find() ([]entities.Photo, error)
 	FindByID(ID int) (entities.Photo, error)
 	Save(photo entities.Photo) (entities.Photo, error)
+	Delete(photo entities.Photo) (entities.Photo, error)
 }
 
 type photoRepository struct {
@@ -42,4 +43,8 @@ func (r *photoRepository) FindByID(ID int) (entities.Photo, error) {
 
 func (r *photoRepository) Save(photo entities.Photo) (entities.Photo, error) {
 	return photo, r.db.Save(&photo).Error
+}
+
+func (r *photoRepository) Delete(photo entities.Photo) (entities.Photo, error) {
+	return photo, r.db.Delete(&photo).Error
 }
