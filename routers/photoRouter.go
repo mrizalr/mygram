@@ -7,9 +7,10 @@ import (
 )
 
 func InitPhotoRoutes(Routes *gin.Engine, handler *handlers.PhotoHandlers) {
-	userGroup := Routes.Group("/photos")
+	photoGroup := Routes.Group("/photos")
 	{
-		userGroup.POST("/", middlewares.Auth, handler.UploadPhoto)
-		userGroup.GET("/", middlewares.Auth, handler.GetAllPhotos)
+		photoGroup.POST("/", middlewares.Auth, handler.UploadPhoto)
+		photoGroup.GET("/", middlewares.Auth, handler.GetAllPhotos)
+		photoGroup.PUT("/:photoId", middlewares.Auth, handler.UpdatePhoto)
 	}
 }

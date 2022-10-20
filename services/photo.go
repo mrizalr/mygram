@@ -1,6 +1,9 @@
 package services
 
 import (
+	"errors"
+	"strconv"
+
 	"github.com/mrizalr/mygram/entities"
 	"github.com/mrizalr/mygram/models"
 	"github.com/mrizalr/mygram/repositories"
@@ -9,6 +12,7 @@ import (
 type PhotoService interface {
 	Create(userID int, createRequest models.CreatePhotoRequest) (entities.Photo, error)
 	GetAll() ([]entities.Photo, error)
+	Update(paramID string, userID int, updateRequest models.CreatePhotoRequest) (entities.Photo, error)
 }
 
 type photoService struct {
@@ -40,4 +44,26 @@ func (s *photoService) Create(userID int, createRequest models.CreatePhotoReques
 
 func (s *photoService) GetAll() ([]entities.Photo, error) {
 	return s.photoRepository.Find()
+}
+
+func (s *photoService) Update(paramID string, userID int, updateRequest models.CreatePhotoRequest) (entities.Photo, error) {
+	ID, err := strconv.Atoi(paramID)
+	if err != nil {
+		return entities.Photo{}, err
+	}
+
+	photo, err := s.photoRepository.FindByID(ID)
+	if err != nil {
+		return entities.Photo{}, err
+	}
+
+	if photo.UserID != uint(userID) {
+		return entities.Photo{}, errors.New("Not authorized")
+	}
+
+	photo.Title = updateRequest.Title
+	photo.Caption = updateRequest.Caption
+	photo.PhotoURL = updateRequest.PhotoURL
+
+	return s.photoRepository.Save(photo)
 }

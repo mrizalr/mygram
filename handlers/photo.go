@@ -61,3 +61,35 @@ func (h *PhotoHandlers) GetAllPhotos(c *gin.Context) {
 
 	c.JSON(http.StatusOK, photosResponse)
 }
+
+func (h *PhotoHandlers) UpdatePhoto(c *gin.Context) {
+	photoID := c.Param("photoId")
+	photoRequest := models.CreatePhotoRequest{}
+	if err := c.ShouldBindJSON(&photoRequest); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	claims, _ := c.Get("claims")
+	userID := claims.(jwt.MapClaims)["user_id"].(float64)
+	result, err := h.photoService.Update(photoID, int(userID), photoRequest)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"id":         result.ID,
+		"title":      result.Title,
+		"caption":    result.Caption,
+		"photo_url":  result.PhotoURL,
+		"user_id":    result.UserID,
+		"updated_at": result.UpdatedAt,
+	})
+}

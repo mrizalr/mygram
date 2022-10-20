@@ -9,6 +9,8 @@ import (
 type PhotoRepository interface {
 	Create(user entities.User, photo entities.Photo) (entities.Photo, error)
 	Find() ([]entities.Photo, error)
+	FindByID(ID int) (entities.Photo, error)
+	Save(photo entities.Photo) (entities.Photo, error)
 }
 
 type photoRepository struct {
@@ -30,4 +32,14 @@ func (r *photoRepository) Find() ([]entities.Photo, error) {
 	var photos []entities.Photo
 	err := r.db.Model(&photos).Preload("User").Find(&photos).Error
 	return photos, err
+}
+
+func (r *photoRepository) FindByID(ID int) (entities.Photo, error) {
+	var photo entities.Photo
+	err := r.db.Where("id = ?", ID).Find(&photo).Error
+	return photo, err
+}
+
+func (r *photoRepository) Save(photo entities.Photo) (entities.Photo, error) {
+	return photo, r.db.Save(&photo).Error
 }
