@@ -29,5 +29,10 @@ func main() {
 	photoHandler := handlers.NewPhotoHandlers(photoService)
 	routers.InitPhotoRoutes(Routes, photoHandler)
 
+	commentRepository := repositories.NewCommentRepository(database.GetDB())
+	commentService := services.NewCommentService(commentRepository)
+	commentHandler := handlers.NewCommentHandlers(commentService)
+	routers.InitCommentRoutes(Routes, commentHandler)
+
 	Routes.Run(os.Getenv("SERVER_PORT"))
 }
