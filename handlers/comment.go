@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -32,7 +33,7 @@ func (h *CommentHandlers) CreateComment(c *gin.Context) {
 	claims, _ := c.Get("claims")
 	userId := claims.(jwt.MapClaims)["user_id"].(float64)
 
-	comment, err := h.commentService.CreateComment(int(userId), createCommentRequest)
+	comment, err := h.commentService.Create(int(userId), createCommentRequest)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"status":  "error",
@@ -48,4 +49,75 @@ func (h *CommentHandlers) CreateComment(c *gin.Context) {
 		"user_id":    comment.UserID,
 		"created_at": comment.CreatedAt,
 	})
+}
+
+func (h *CommentHandlers) GetAllComment(c *gin.Context) {
+	c.MustGet("claims")
+
+	comments, err := h.commentService.GetAll()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{
+			"status":  "error",
+			"message": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, comments)
+}
+
+func (h *CommentHandlers) UpdateComment(c *gin.Context) {
+	commentID, err := strconv.Atoi(c.Param("commentId"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	commentRequest := models.UpdateCommentRequest{}
+	if err := c.ShouldBindJSON(&commentRequest); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	claims, _ := c.Get("claims")
+	userID := claims.(jwt.MapClaims)["user_id"].(float64)
+
+	comment, err := h.commentService.Update(commentID, int(userID), commentRequest)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, comment)
+}
+
+func (h *CommentHandlers) DeleteComment(c *gin.Context) {
+	commentID, err := strconv.Atoi(c.Param("commentId"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	claims, _ := c.Get("claims")
+	userID := claims.(jwt.MapClaims)["user_id"].(float64)
+
+	comment, err := h.commentService.Delete(commentID, int(userID))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, comment)
 }

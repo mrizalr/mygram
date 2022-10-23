@@ -30,7 +30,7 @@ func main() {
 	routers.InitPhotoRoutes(Routes, photoHandler)
 
 	commentRepository := repositories.NewCommentRepository(database.GetDB())
-	commentService := services.NewCommentService(commentRepository)
+	commentService := services.NewCommentService(commentRepository, userRepository)
 	commentHandler := handlers.NewCommentHandlers(commentService)
 	routers.InitCommentRoutes(Routes, commentHandler)
 
