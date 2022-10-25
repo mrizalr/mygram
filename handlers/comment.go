@@ -42,13 +42,7 @@ func (h *CommentHandlers) CreateComment(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"id":         comment.ID,
-		"message":    comment.Message,
-		"photo_id":   comment.PhotoID,
-		"user_id":    comment.UserID,
-		"created_at": comment.CreatedAt,
-	})
+	c.JSON(http.StatusCreated, models.ParseToCreateCommentResponse(comment))
 }
 
 func (h *CommentHandlers) GetAllComment(c *gin.Context) {
@@ -93,7 +87,7 @@ func (h *CommentHandlers) UpdateComment(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, comment)
+	c.JSON(http.StatusOK, models.ParseToUpdateCommentResponse(comment))
 }
 
 func (h *CommentHandlers) DeleteComment(c *gin.Context) {
@@ -109,7 +103,7 @@ func (h *CommentHandlers) DeleteComment(c *gin.Context) {
 	claims, _ := c.Get("claims")
 	userID := claims.(jwt.MapClaims)["user_id"].(float64)
 
-	comment, err := h.commentService.Delete(commentID, int(userID))
+	_, err = h.commentService.Delete(commentID, int(userID))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"status":  "error",
@@ -117,5 +111,7 @@ func (h *CommentHandlers) DeleteComment(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, comment)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Your comment has been sucessfully deleted",
+	})
 }

@@ -42,7 +42,7 @@ func (h *SocialMediaHandlers) AddSocialMedia(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, socialMedia)
+	c.JSON(http.StatusCreated, models.ParseToAddSocialMediaResponse(socialMedia))
 }
 
 func (h *SocialMediaHandlers) GetAllSocmeds(c *gin.Context) {
@@ -55,7 +55,9 @@ func (h *SocialMediaHandlers) GetAllSocmeds(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, socmeds)
+	c.JSON(http.StatusOK, gin.H{
+		"social_medias": socmeds,
+	})
 }
 
 func (h *SocialMediaHandlers) UpdateSocmed(c *gin.Context) {
@@ -69,10 +71,10 @@ func (h *SocialMediaHandlers) UpdateSocmed(c *gin.Context) {
 	}
 
 	socmedUpdateRequest := models.AddSocialMediaRequest{}
-	if err := c.ShouldBindJSON(&socmedUpdateRequest) ; err != nil {
+	if err := c.ShouldBindJSON(&socmedUpdateRequest); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"status":   "error",
-			"message":err.Error(),
+			"status":  "error",
+			"message": err.Error(),
 		})
 		return
 	}
@@ -80,16 +82,16 @@ func (h *SocialMediaHandlers) UpdateSocmed(c *gin.Context) {
 	claims, _ := c.Get("claims")
 	userID := claims.(jwt.MapClaims)["user_id"].(float64)
 
-	socmed,err := h.socmedService.UpdateSocmed(socmedID, int(userID), socmedUpdateRequest)
+	socmed, err := h.socmedService.UpdateSocmed(socmedID, int(userID), socmedUpdateRequest)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"message":  err.Error(),
+			"status":  "error",
+			"message": err.Error(),
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, socmed)
+	c.JSON(http.StatusOK, models.ParseToUpdateSocialMediaResponse(socmed))
 }
 
 func (h *SocialMediaHandlers) DeleteSocmed(c *gin.Context) {
@@ -102,28 +104,19 @@ func (h *SocialMediaHandlers) DeleteSocmed(c *gin.Context) {
 		return
 	}
 
-	socmedUpdateRequest := models.AddSocialMediaRequest{}
-	if err := c.ShouldBindJSON(&socmedUpdateRequest) ; err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"status":   "error",
-			"message":err.Error(),
-		})
-		return
-	}
-
 	claims, _ := c.Get("claims")
 	userID := claims.(jwt.MapClaims)["user_id"].(float64)
 
-	_,err = h.socmedService.DeleteSocmed(socmedID, int(userID))
+	_, err = h.socmedService.DeleteSocmed(socmedID, int(userID))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"message":  err.Error(),
+			"status":  "error",
+			"message": err.Error(),
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H {
-		"message":"Your social media has been successfully deleted",
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Your social media has been successfully deleted",
 	})
 }

@@ -41,7 +41,7 @@ func (h *PhotoHandlers) UploadPhoto(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, photo)
+	c.JSON(http.StatusCreated, models.ParseToCreatePhotoResponse(photo))
 }
 
 func (h *PhotoHandlers) GetAllPhotos(c *gin.Context) {
@@ -54,12 +54,7 @@ func (h *PhotoHandlers) GetAllPhotos(c *gin.Context) {
 		return
 	}
 
-	photosResponse := []models.GetPhotoResponse{}
-	for _, photo := range photos {
-		photosResponse = append(photosResponse, models.ParseToGetPhotoResponse(photo, photo.User))
-	}
-
-	c.JSON(http.StatusOK, photosResponse)
+	c.JSON(http.StatusOK, photos)
 }
 
 func (h *PhotoHandlers) UpdatePhoto(c *gin.Context) {
@@ -84,14 +79,7 @@ func (h *PhotoHandlers) UpdatePhoto(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"id":         result.ID,
-		"title":      result.Title,
-		"caption":    result.Caption,
-		"photo_url":  result.PhotoURL,
-		"user_id":    result.UserID,
-		"updated_at": result.UpdatedAt,
-	})
+	c.JSON(http.StatusOK, models.ParseToUpdatePhotoResponse(result))
 }
 
 func (h *PhotoHandlers) DeletePhoto(c *gin.Context) {

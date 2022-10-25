@@ -11,17 +11,53 @@ type CreateCommentRequest struct {
 	PhotoId uint   `json:"photo_id" binding:"required,number"`
 }
 
+type CreateCommentResponse struct {
+	ID        uint      `json:"id"`
+	Message   string    `json:"message"`
+	PhotoID   uint      `json:"photo_id"`
+	UserID    uint      `json:"user_id"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+func ParseToCreateCommentResponse(comment entities.Comment) CreateCommentResponse {
+	return CreateCommentResponse{
+		ID:        comment.ID,
+		Message:   comment.Message,
+		PhotoID:   comment.PhotoID,
+		UserID:    comment.UserID,
+		CreatedAt: comment.CreatedAt,
+	}
+}
+
 type UpdateCommentRequest struct {
 	Message string `json:"message"`
 }
 
+type UpdateCommentResponse struct {
+	ID        uint      `json:"id"`
+	Message   string    `json:"message"`
+	PhotoID   uint      `json:"photo_id"`
+	UserID    uint      `json:"user_id"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func ParseToUpdateCommentResponse(comment entities.Comment) UpdateCommentResponse {
+	return UpdateCommentResponse{
+		ID:        comment.ID,
+		Message:   comment.Message,
+		PhotoID:   comment.PhotoID,
+		UserID:    comment.UserID,
+		UpdatedAt: comment.UpdatedAt,
+	}
+}
+
 type GetCommentResponse struct {
 	ID        uint      `json:"id"`
-	UserID    uint      `json:"user_id"`
-	PhotoID   uint      `json:"photo_id"`
 	Message   string    `json:"message"`
-	CreatedAt time.Time `json:"created_at"`
+	PhotoID   uint      `json:"photo_id"`
+	UserID    uint      `json:"user_id"`
 	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"created_at"`
 	User      struct {
 		ID       uint   `json:"id"`
 		Email    string `json:"email"`

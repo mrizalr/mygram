@@ -9,9 +9,10 @@ import (
 func InitPhotoRoutes(Routes *gin.Engine, handler *handlers.PhotoHandlers) {
 	photoGroup := Routes.Group("/photos")
 	{
-		photoGroup.POST("/", middlewares.Auth, handler.UploadPhoto)
-		photoGroup.GET("/", middlewares.Auth, handler.GetAllPhotos)
-		photoGroup.PUT("/:photoId", middlewares.Auth, handler.UpdatePhoto)
-		photoGroup.DELETE("/:photoId", middlewares.Auth, handler.DeletePhoto)
+		photoGroup.Use(middlewares.Auth)
+		photoGroup.POST("/", handler.UploadPhoto)
+		photoGroup.GET("/", handler.GetAllPhotos)
+		photoGroup.PUT("/:photoId", handler.UpdatePhoto)
+		photoGroup.DELETE("/:photoId", handler.DeletePhoto)
 	}
 }

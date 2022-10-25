@@ -9,9 +9,10 @@ import (
 func InitSocmedRouter(Routes *gin.Engine, handler *handlers.SocialMediaHandlers) {
 	socmedGroup := Routes.Group("/socialmedias")
 	{
-		socmedGroup.POST("/", middlewares.Auth, handler.AddSocialMedia)
-		socmedGroup.GET("/", middlewares.Auth, handler.GetAllSocmeds)
-		socmedGroup.PUT("/:socialMediaId", middlewares.Auth, handler.UpdateSocmed)
-		socmedGroup.DELETE("/:socialMediaId", middlewares.Auth, handler.DeleteSocmed)
+		socmedGroup.Use(middlewares.Auth)
+		socmedGroup.POST("/", handler.AddSocialMedia)
+		socmedGroup.GET("/", handler.GetAllSocmeds)
+		socmedGroup.PUT("/:socialMediaId", handler.UpdateSocmed)
+		socmedGroup.DELETE("/:socialMediaId", handler.DeleteSocmed)
 	}
 }

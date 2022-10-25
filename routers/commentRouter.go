@@ -9,9 +9,10 @@ import (
 func InitCommentRoutes(Routes *gin.Engine, handler *handlers.CommentHandlers) {
 	commentGroup := Routes.Group("/comments")
 	{
-		commentGroup.POST("/", middlewares.Auth, handler.CreateComment)
-		commentGroup.GET("/", middlewares.Auth, handler.GetAllComment)
-		commentGroup.PUT("/:commentId", middlewares.Auth, handler.UpdateComment)
-		commentGroup.DELETE("/:commentId", middlewares.Auth, handler.DeleteComment)
+		commentGroup.Use(middlewares.Auth)
+		commentGroup.POST("/", handler.CreateComment)
+		commentGroup.GET("/", handler.GetAllComment)
+		commentGroup.PUT("/:commentId", handler.UpdateComment)
+		commentGroup.DELETE("/:commentId", handler.DeleteComment)
 	}
 }

@@ -11,7 +11,7 @@ import (
 
 type PhotoService interface {
 	Create(userID int, createRequest models.CreatePhotoRequest) (entities.Photo, error)
-	GetAll() ([]entities.Photo, error)
+	GetAll() ([]models.GetPhotoResponse, error)
 	Update(paramID string, userID int, updateRequest models.CreatePhotoRequest) (entities.Photo, error)
 	Delete(paramID string, userID int) (entities.Photo, error)
 }
@@ -43,8 +43,21 @@ func (s *photoService) Create(userID int, createRequest models.CreatePhotoReques
 	return s.photoRepository.Create(user, newPhoto)
 }
 
-func (s *photoService) GetAll() ([]entities.Photo, error) {
-	return s.photoRepository.Find()
+func (s *photoService) GetAll() ([]models.GetPhotoResponse, error) {
+	response := []models.GetPhotoResponse{}
+	photos, err := s.photoRepository.Find()
+	if err != nil {
+		return response, err
+	}
+
+	for _, photo := range photos {
+		user, err := s.userRepository.FindByID(int(photo.UserID))
+		if err != nil {
+			return response, err
+		}
+		response = append(response, models.ParseToGetPhotoResponse(photo, user))
+	}
+	return response, nil
 }
 
 func (s *photoService) Update(paramID string, userID int, updateRequest models.CreatePhotoRequest) (entities.Photo, error) {

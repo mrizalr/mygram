@@ -31,7 +31,7 @@ func (r *photoRepository) Create(user entities.User, photo entities.Photo) (enti
 
 func (r *photoRepository) Find() ([]entities.Photo, error) {
 	var photos []entities.Photo
-	err := r.db.Model(&photos).Preload("User").Find(&photos).Error
+	err := r.db.Find(&photos).Error
 	return photos, err
 }
 
