@@ -8,6 +8,8 @@ import (
 type SocmedRepository interface {
 	Create(socmed entities.SocialMedia) (entities.SocialMedia, error)
 	FindAll() ([]entities.SocialMedia, error)
+	Save(socmed entities.SocialMedia) (entities.SocialMedia, error)
+	FindByID(ID int) (entities.SocialMedia, error)
 }
 
 type socmedRepository struct {
@@ -24,9 +26,19 @@ func (r *socmedRepository) Create(socmed entities.SocialMedia) (entities.SocialM
 	return socmed, r.db.Create(&socmed).Error
 }
 
-func (r *socmedRepository) FindAll() ([]entities.SocialMedia, error){
+func (r *socmedRepository) FindAll() ([]entities.SocialMedia, error) {
 	socialMedias := []entities.SocialMedia{}
 	err := r.db.Find(&socialMedias).Error
 
 	return socialMedias, err
+}
+
+func (r *socmedRepository) Save(socmed entities.SocialMedia) (entities.SocialMedia, error) {
+	return socmed, r.db.Save(&socmed).Error
+}
+
+func (r *socmedRepository) FindByID(ID int) (entities.SocialMedia, error) {
+	socmed := entities.SocialMedia{}
+	err := r.db.Where("id = ?", ID).First(&socmed).Error
+	return socmed, err
 }

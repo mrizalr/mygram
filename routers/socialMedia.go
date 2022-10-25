@@ -11,5 +11,6 @@ func InitSocmedRouter(Routes *gin.Engine, handler *handlers.SocialMediaHandlers)
 	{
 		socmedGroup.POST("/", middlewares.Auth, handler.AddSocialMedia)
 		socmedGroup.GET("/", middlewares.Auth, handler.GetAllSocmeds)
+		socmedGroup.PUT("/:socialMediaId", middlewares.Auth, handler.UpdateSocmed)
 	}
 }
