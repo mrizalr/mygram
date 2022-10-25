@@ -91,3 +91,39 @@ func (h *SocialMediaHandlers) UpdateSocmed(c *gin.Context) {
 
 	c.JSON(http.StatusOK, socmed)
 }
+
+func (h *SocialMediaHandlers) DeleteSocmed(c *gin.Context) {
+	socmedID, err := strconv.Atoi(c.Param("socialMediaId"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	socmedUpdateRequest := models.AddSocialMediaRequest{}
+	if err := c.ShouldBindJSON(&socmedUpdateRequest) ; err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"status":   "error",
+			"message":err.Error(),
+		})
+		return
+	}
+
+	claims, _ := c.Get("claims")
+	userID := claims.(jwt.MapClaims)["user_id"].(float64)
+
+	_,err = h.socmedService.DeleteSocmed(socmedID, int(userID))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"message":  err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H {
+		"message":"Your social media has been successfully deleted",
+	})
+}

@@ -10,6 +10,7 @@ type SocmedRepository interface {
 	FindAll() ([]entities.SocialMedia, error)
 	Save(socmed entities.SocialMedia) (entities.SocialMedia, error)
 	FindByID(ID int) (entities.SocialMedia, error)
+	Delete(socmed entities.SocialMedia) (entities.SocialMedia, error)
 }
 
 type socmedRepository struct {
@@ -41,4 +42,8 @@ func (r *socmedRepository) FindByID(ID int) (entities.SocialMedia, error) {
 	socmed := entities.SocialMedia{}
 	err := r.db.Where("id = ?", ID).First(&socmed).Error
 	return socmed, err
+}
+
+func (r *socmedRepository) Delete(socmed entities.SocialMedia) (entities.SocialMedia, error) {
+	return socmed, r.db.Delete(&socmed).Error
 }
