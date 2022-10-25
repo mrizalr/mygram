@@ -35,7 +35,7 @@ func main() {
 	routers.InitCommentRoutes(Routes, commentHandler)
 
 	socmedRepository := repositories.NewSocmedRepository(database.GetDB())
-	socmedService := services.NewSocmedService(socmedRepository)
+	socmedService := services.NewSocmedService(socmedRepository, userRepository)
 	socmedHandler := handlers.NewSocialMediaHandlers(socmedService)
 	routers.InitSocmedRouter(Routes, socmedHandler)
 

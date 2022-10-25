@@ -24,7 +24,7 @@ func (h *SocialMediaHandlers) AddSocialMedia(c *gin.Context) {
 	if err := c.ShouldBindJSON(&socmedRequest); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  err.Error(),
+			"message":  err.Error(),
 		})
 		return
 	}
@@ -36,10 +36,23 @@ func (h *SocialMediaHandlers) AddSocialMedia(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{
 			"status": "error",
-			"error":  err.Error(),
+			"message":  err.Error(),
 		})
 		return
 	}
 
 	c.JSON(http.StatusCreated, socialMedia)
+}
+
+func (h *SocialMediaHandlers) GetAllSocmeds(c *gin.Context) {
+	socmeds, err := h.socmedService.GetAll()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{
+			"status": "error",
+			"message":  err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, socmeds)
 }

@@ -52,8 +52,6 @@ func (h *CommentHandlers) CreateComment(c *gin.Context) {
 }
 
 func (h *CommentHandlers) GetAllComment(c *gin.Context) {
-	c.MustGet("claims")
-
 	comments, err := h.commentService.GetAll()
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{

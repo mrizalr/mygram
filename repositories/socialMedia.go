@@ -1,12 +1,13 @@
 package repositories
 
 import (
-	"gorm.io/gorm"
 	"github.com/mrizalr/mygram/entities"
+	"gorm.io/gorm"
 )
 
 type SocmedRepository interface {
 	Create(socmed entities.SocialMedia) (entities.SocialMedia, error)
+	FindAll() ([]entities.SocialMedia, error)
 }
 
 type socmedRepository struct {
@@ -21,4 +22,11 @@ func NewSocmedRepository(db *gorm.DB) *socmedRepository {
 
 func (r *socmedRepository) Create(socmed entities.SocialMedia) (entities.SocialMedia, error) {
 	return socmed, r.db.Create(&socmed).Error
+}
+
+func (r *socmedRepository) FindAll() ([]entities.SocialMedia, error){
+	socialMedias := []entities.SocialMedia{}
+	err := r.db.Find(&socialMedias).Error
+
+	return socialMedias, err
 }
