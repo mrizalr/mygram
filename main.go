@@ -34,5 +34,10 @@ func main() {
 	commentHandler := handlers.NewCommentHandlers(commentService)
 	routers.InitCommentRoutes(Routes, commentHandler)
 
+	socmedRepository := repositories.NewSocmedRepository(database.GetDB())
+	socmedService := services.NewSocmedService(socmedRepository)
+	socmedHandler := handlers.NewSocialMediaHandlers(socmedService)
+	routers.InitSocmedRouter(Routes, socmedHandler)
+
 	Routes.Run(os.Getenv("SERVER_PORT"))
 }
